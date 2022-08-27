@@ -42,18 +42,17 @@ export default class MailReader {
 		return attachments;
 	}
 
-	#buildAttMessageFunction(attachment) {
-		var filename = attachment.params.name.replaceAll('!', '-');
+	#buildAttMessageFunction(attachment, filename) {
 		var encoding = attachment.encoding;
 
 		return function (msg, seqno) {
 			var prefix = '(#' + seqno + ') ';
 			msg.on('body', function(stream, info) {
 				//Create a write stream so that we can stream the attachment to file;
-				console.log(prefix + 'Streaming this attachment to file', filename, info);
+				//console.log(prefix + 'Streaming this attachment to file', filename, info);
 				var writeStream = fs.createWriteStream('rawdata/' + filename);
 				writeStream.on('finish', function() {
-					console.log(prefix + 'Done writing to file %s', filename);
+					//console.log(prefix + 'Done writing to file %s', filename);
 				});
 
 				//stream.pipe(writeStream); this would write base64 data to the file.
@@ -67,7 +66,7 @@ export default class MailReader {
 				}
 			});
 			msg.once('end', function() {
-				console.log(prefix + 'Finished attachment %s', filename);
+				//console.log(prefix + 'Finished attachment %s', filename);
 			});
 		};
 	}	
@@ -104,24 +103,31 @@ export default class MailReader {
 
 						const attachments = this.#findAttachmentParts(attrs.struct);
 
-						console.log(prefix + 'Has attachments: %d', attachments.length);
+						//console.log(prefix + 'Has attachments: %d', attachments.length);
 
 						for (let i = 0; i < attachments.length; ++i) {
 							const attachment = attachments[i];
+							let filename;
+							if(attachment.params && attachment.params.name) {
+								filename = attachment.params.name.replaceAll('!', '-');
+							}
+							if(attachment.disposition && attachment.disposition.params && attachment.disposition.params.filename) {
+								filename = attachment.disposition.params.filename.replaceAll('!', '-');
+							}
 
-							if(!attachment.params || !attachment.params.name) {
-								console.log('Invalid file', attachment);
+							if(!filename) {
+								console.log('Invalid attachment', attachment);
 								continue;
 							}
 
-							console.log(prefix + 'Fetching attachment %s', attachment.params.name);
+							//console.log(prefix + 'Fetching attachment %s', filename);
 							const attachmentFetch = this.#imap.fetch(attrs.uid , {
 								bodies: [attachment.partID],
 								struct: true
 							});
 
 							//build function to process attachment message
-							attachmentFetch.on('message', this.#buildAttMessageFunction(attachment));
+							attachmentFetch.on('message', this.#buildAttMessageFunction(attachment, filename));
 
 							clearTimeout(timeoutId);
 							timeoutId = setTimeout(resolve, 5000);
