@@ -9,6 +9,13 @@ const config = {
 		},
 		directory: 'MyFolder', // Optionnal, mail box directory to read, default goes to INBOX if not specified
 	},
+	postgres: {
+		user: "DBUSER",
+		host: "localhost",
+		database: "DBUSER",
+		password: "PASSWORDHERE",
+		port: 5432
+	}
 };
 
 export default config;

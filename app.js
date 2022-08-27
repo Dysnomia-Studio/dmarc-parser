@@ -4,6 +4,7 @@ import { inspect } from 'util';
 import { parseString } from 'xml2js';
 import zlib from 'node:zlib';
 
+import Database from './Database.js'; 
 import MailReader from './MailReader.js'; 
 
 const PROCESSED_DATA_FOLDER = 'processedData/';
@@ -12,6 +13,8 @@ const RAW_DATA_FOLDER = 'rawdata/';
 import config from './config.js';
 
 (async() => {
+	const db = new Database(config.postgres);
+
 	/// GET MAILS
 	let mailReader;
 
@@ -70,6 +73,8 @@ import config from './config.js';
 	}
 
 	/// PARSE XML
+	const dbData = await db.selectAll();
+
 	for(const dir of fs.readdirSync(PROCESSED_DATA_FOLDER)) {
 		if(!fs.lstatSync(PROCESSED_DATA_FOLDER + dir).isDirectory()) {
 			console.log(dir + ' is not a directory !');
@@ -85,9 +90,23 @@ import config from './config.js';
 
 			const xml = fs.readFileSync(path, 'utf8');
 			parseString(xml, function (err, result) {
-			    console.log(inspect(result));
+				if(err) {
+					console.error(err);
+				}
+
+				if(dbData.find((elt) =>
+					elt.report_id === result.feedback.report_metadata[0].report_id[0] &&
+					elt.org_name === result.feedback.report_metadata[0].org_name[0]
+				)) {
+					return;
+				}
+
+				try {
+			    	db.insertData(result, path);
+			    } catch(e) {
+			    	console.error(e);
+			    }
 			});
-			return;
 		}
 	}
 })();
