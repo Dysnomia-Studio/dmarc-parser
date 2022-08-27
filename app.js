@@ -1,5 +1,6 @@
 import fs from 'fs';
 import jszip from 'jszip';
+import { inspect } from 'util';
 import { parseString } from 'xml2js';
 import zlib from 'node:zlib';
 
@@ -35,7 +36,7 @@ import config from './config.js';
 			const filename = RAW_DATA_FOLDER + file;
 			const newFilename = PROCESSED_DATA_FOLDER + file;
 
-			console.log('Unzipping ' + filename);
+			console.log('Unzipping ' + file);
 
 			const fileContent = fs.readFileSync(filename);
 			const jszipInstance = new jszip();
@@ -53,7 +54,7 @@ import config from './config.js';
 				}
 			}
 		} else if(file.endsWith('.gz')) {
-			console.log('Gunzipping ' + filename);
+			console.log('Gunzipping ' + file);
 
 			const name = file.replaceAll('.gz', '');
 			const folder = name.replace('.xml', '');
@@ -76,9 +77,15 @@ import config from './config.js';
 		}
 
 		for(const file of fs.readdirSync(PROCESSED_DATA_FOLDER + dir)) {
-			const xml = fs.readFileSync(PROCESSED_DATA_FOLDER + dir + '/' + file, 'utf8');
+			const path = PROCESSED_DATA_FOLDER + dir + '/' + file;
+			if(!path.endsWith('.xml')) {
+				console.log('Invalid extracted file: ', file);
+				continue;
+			}
+
+			const xml = fs.readFileSync(path, 'utf8');
 			parseString(xml, function (err, result) {
-			    console.dir(result);
+			    console.log(inspect(result));
 			});
 			return;
 		}
