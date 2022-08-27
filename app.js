@@ -1,10 +1,12 @@
 import fs from 'fs';
 import jszip from 'jszip';
 import { parseString } from 'xml2js';
+import zlib from 'node:zlib';
 
 import MailReader from './MailReader.js'; 
 
 const PROCESSED_DATA_FOLDER = 'processedData/';
+const RAW_DATA_FOLDER = 'rawdata/';
 
 import config from './config.js';
 
@@ -27,34 +29,43 @@ import config from './config.js';
 	fs.rmSync(PROCESSED_DATA_FOLDER, { recursive: true, force: true });
 	fs.mkdirSync(PROCESSED_DATA_FOLDER);
 
-	/// UNZIP files
-	for(const file of fs.readdirSync('rawdata')) {
-		if(!file.endsWith('.zip')) {
-			console.log('Invalid file: ' + file);
-			continue;
-		}
+	/// Extract archives
+	for(const file of fs.readdirSync(RAW_DATA_FOLDER)) {
+		if(file.endsWith('.zip')) {
+			const filename = RAW_DATA_FOLDER + file;
+			const newFilename = PROCESSED_DATA_FOLDER + file;
 
-		const filename = 'rawdata/' + file;
-		const newFilename = PROCESSED_DATA_FOLDER + file;
+			console.log('Unzipping ' + filename);
 
-		console.log('Unzipping ' + filename);
+			const fileContent = fs.readFileSync(filename);
+			const jszipInstance = new jszip();
+			const res = await jszipInstance.loadAsync(fileContent);
 
-		const fileContent = fs.readFileSync(filename);
-		const jszipInstance = new jszip();
-		const res = await jszipInstance.loadAsync(fileContent);
+			fs.mkdirSync(newFilename);
 
-		fs.mkdirSync(newFilename);
+			for(const insideFileName in res.files) {
+				const insideFile = res.files[insideFileName]; 
 
-		for(const insideFileName in res.files) {
-			const insideFile = res.files[insideFileName]; 
-			console.log('Found file ' + insideFile);
-
-			if(insideFile.dir) {
-				fs.mkdirSync(newFilename + '/' + insideFile.name);
-			} else {
-				fs.writeFileSync(`${newFilename}/${insideFile.name}`, Buffer.from(await insideFile.async('arraybuffer')));
+				if(insideFile.dir) {
+					fs.mkdirSync(newFilename + '/' + insideFile.name);
+				} else {
+					fs.writeFileSync(`${newFilename}/${insideFile.name}`, Buffer.from(await insideFile.async('arraybuffer')));
+				}
 			}
-		} 
+		} else if(file.endsWith('.gz')) {
+			console.log('Gunzipping ' + filename);
+
+			const name = file.replaceAll('.gz', '');
+			const folder = name.replace('.xml', '');
+			fs.mkdirSync(PROCESSED_DATA_FOLDER + folder);
+
+			const writeStream = fs.createWriteStream(PROCESSED_DATA_FOLDER + folder + '/' + name);
+			fs.createReadStream(RAW_DATA_FOLDER + file)
+			    .pipe(zlib.createGunzip())
+			    .pipe(writeStream);
+		} else {
+			console.log('Invalid file: ' + file);
+		}
 	}
 
 	/// PARSE XML
