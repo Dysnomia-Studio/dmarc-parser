@@ -1,0 +1,1301 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_POSTGRESQL_- DMARCREPORTS",
+      "label": "PostgreSQL - dmarcreports",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "postgres",
+      "pluginName": "PostgreSQL"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "6.7.6"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "domain"
+              ],
+              "type": "column"
+            },
+            {
+              "params": [
+                "date_range_begin"
+              ],
+              "type": "column"
+            }
+          ],
+          "metricColumn": "domain",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  date_range_begin AS \"time\",\n  domain AS metric,\n  count\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin)\nORDER BY 1,2",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "avg"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Sent mails",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.6",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    dkim = 'pass' AND\n    domain = 'elanis.eu'\n  ORDER BY 1)::float /\n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    domain = 'elanis.eu' AND dkim <> ''\n  ORDER BY 1)::float * 100 as data",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "elanis.eu - DKIM PASS",
+      "type": "gauge"
+    },
+    {
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 16,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.6",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    spf = 'pass' AND\n    domain = 'elanis.eu'\n  ORDER BY 1)::float /\n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    domain = 'elanis.eu' AND spf <> ''\n  ORDER BY 1)::float * 100 as data",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "elanis.eu - SPF PASS",
+      "type": "gauge"
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 7,
+      "pageSize": null,
+      "pluginVersion": "6.7.6",
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT dkim, COUNT(*)\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin) AND\n  domain = 'elanis.eu' AND dkim <> ''\nGROUP BY dkim",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "elanis.eu - DKIM PASS",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 4
+      },
+      "id": 14,
+      "pageSize": null,
+      "pluginVersion": "6.7.6",
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT spf, COUNT(*)\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin) AND\n  domain = 'elanis.eu' AND spf <> ''\nGROUP BY spf",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "elanis.eu - SPF PASS",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 8
+      },
+      "id": 8,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.6",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    dkim = 'pass' AND\n    domain = 'galactae.eu'\n  ORDER BY 1)::float /\n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    domain = 'galactae.eu' AND dkim <> ''\n  ORDER BY 1)::float * 100 as data",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "galactae.eu - DKIM PASS",
+      "type": "gauge"
+    },
+    {
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 16,
+        "y": 8
+      },
+      "id": 11,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.6",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    spf = 'pass' AND\n    domain = 'galactae.eu'\n  ORDER BY 1)::float /\n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    domain = 'galactae.eu' AND spf <> ''\n  ORDER BY 1)::float * 100 as data",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "galactae.eu - SPF PASS",
+      "type": "gauge"
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 8
+      },
+      "id": 13,
+      "pageSize": null,
+      "pluginVersion": "6.7.6",
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT dkim, COUNT(*)\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin) AND\n  domain = 'galactae.eu' AND dkim <> ''\nGROUP BY dkim",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "galactae.eu - DKIM PASS",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "hiddenSeries": false,
+      "id": 19,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "domain"
+              ],
+              "type": "column"
+            },
+            {
+              "params": [
+                "date_range_begin"
+              ],
+              "type": "column"
+            }
+          ],
+          "metricColumn": "domain",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  date_range_begin AS \"time\",\n  domain AS metric,\n  count\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin) AND\n  disposition = 'quarantine'\nORDER BY 1,2",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "avg"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Quarentined mail",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "10",
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 12
+      },
+      "id": 9,
+      "pageSize": null,
+      "pluginVersion": "6.7.6",
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT spf, COUNT(*)\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin) AND\n  domain = 'galactae.eu' AND spf <> ''\nGROUP BY spf",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "galactae.eu - SPF PASS",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 16
+      },
+      "id": 15,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.6",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    dkim = 'pass' AND\n    domain = 'dysnomia.studio'\n  ORDER BY 1)::float /\n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    domain = 'dysnomia.studio' AND dkim <> ''\n  ORDER BY 1)::float * 100 as data",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "dysnomia.studio - DKIM PASS",
+      "type": "gauge"
+    },
+    {
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 16,
+        "y": 16
+      },
+      "id": 18,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.6",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    spf = 'pass' AND\n    domain = 'dysnomia.studio'\n  ORDER BY 1)::float /\n  (SELECT\n    COUNT(*)\n  FROM feedback\n  WHERE\n    $__unixEpochFilter(date_range_begin) AND\n    domain = 'dysnomia.studio' AND spf <> ''\n  ORDER BY 1)::float * 100 as data",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "dysnomia.studio - SPF PASS",
+      "type": "gauge"
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 16
+      },
+      "id": 16,
+      "pageSize": null,
+      "pluginVersion": "6.7.6",
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT dkim, COUNT(*)\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin) AND\n  domain = 'dysnomia.studio' AND dkim <> ''\nGROUP BY dkim",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "dysnomia.studio - DKIM PASS",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_POSTGRESQL_- DMARCREPORTS}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 20
+      },
+      "id": 17,
+      "pageSize": null,
+      "pluginVersion": "6.7.6",
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT spf, COUNT(*)\nFROM feedback\nWHERE\n  $__unixEpochFilter(date_range_begin) AND\n  domain = 'dysnomia.studio' AND spf <> ''\nGROUP BY spf",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "feedback",
+          "timeColumn": "date_range_begin",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "dysnomia.studio - SPF PASS",
+      "transform": "table",
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 22,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6M",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "DMARC report",
+  "uid": "d8rP3bW4k",
+  "variables": {
+    "list": []
+  },
+  "version": 7
+}
