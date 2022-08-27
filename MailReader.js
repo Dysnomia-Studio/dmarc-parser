@@ -116,11 +116,11 @@ export default class MailReader {
 							}
 
 							if(!filename) {
-								console.log('Invalid attachment', attachment);
+								console.log(`Invalid attachment, ${i + 1}/${attachments.length}`, attachment, data.attrs, data.header);
 								continue;
 							}
 
-							//console.log(prefix + 'Fetching attachment %s', filename);
+							console.log(prefix + 'Fetching attachment %s', filename);
 							const attachmentFetch = this.#imap.fetch(attrs.uid , {
 								bodies: [attachment.partID],
 								struct: true
