@@ -12,7 +12,7 @@ const RAW_DATA_FOLDER = 'rawdata/';
 
 import config from './config.js';
 
-(async() => {
+async function doWork() {
 	const db = new Database(config.postgres);
 
 	/// GET MAILS
@@ -109,4 +109,8 @@ import config from './config.js';
 			});
 		}
 	}
-})();
+}
+
+doWork();
+
+setInterval(doWork, 1000 * 60 * 60 * 12); // Run every 12 hours
