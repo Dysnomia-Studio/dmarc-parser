@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Dockerfile and Push to The Hub
+      uses: firstmate-systems/docker-hub-builder@v1.0
+      with:
+        # The username to authenticate with dockerhub
+        DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+        # The token to authenticate with dockerhub
+        DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
+        # The tag of the base image
+        BASE_TAG: latest
+        # ARG input into Dockerfile for tag
+        TAG_NAME: latest
+        # Name of image to publish to dockerhub, e.g. 'user/my-image'
+        IMAGE_NAME: dysnomiastudio/dmarc-parser
