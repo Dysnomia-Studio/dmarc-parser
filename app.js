@@ -15,6 +15,8 @@ import config from './config.js';
 async function doWork() {
 	const db = new Database(config.postgres);
 
+	fs.mkdirSync(RAW_DATA_FOLDER);
+
 	/// GET MAILS
 	let mailReader;
 
