@@ -100,7 +100,7 @@ async function doWork() {
 				}
 
 				if(!result) {
-					console.error(`Uknown error while parsing ${path}`)
+					console.error(`Unknown error while parsing ${path}`)
 					return;
 				}
 
