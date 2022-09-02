@@ -96,6 +96,12 @@ async function doWork() {
 			parseString(xml, function (err, result) {
 				if(err) {
 					console.error(err);
+					return;
+				}
+
+				if(!result) {
+					console.error(`Uknown error while parsing ${path}`)
+					return;
 				}
 
 				if(dbData.find((elt) =>
