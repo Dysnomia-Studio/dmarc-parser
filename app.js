@@ -32,6 +32,8 @@ async function doWork() {
 
 	/*console.log(*/await mailReader.retrieveLastMail()/*);*/
 
+	mail.closeConnection();
+
 	console.log('Did retrieveLastMail !')
 
 	fs.rmSync(PROCESSED_DATA_FOLDER, { recursive: true, force: true });

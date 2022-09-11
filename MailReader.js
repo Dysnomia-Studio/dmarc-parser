@@ -156,4 +156,8 @@ export default class MailReader {
 
 		return await job;
 	}
+
+	closeConnection() {
+		this.#imap.end();
+	}
 }
