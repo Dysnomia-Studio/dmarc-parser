@@ -32,7 +32,7 @@ async function doWork() {
 
 	/*console.log(*/await mailReader.retrieveLastMail()/*);*/
 
-	mail.closeConnection();
+	mailReader.closeConnection();
 
 	console.log('Did retrieveLastMail !')
 
