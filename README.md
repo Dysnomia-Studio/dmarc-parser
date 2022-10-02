@@ -1,5 +1,8 @@
 # dmarc-parser
 
+[![Reliability Rating](https://sonar.dysnomia.studio/api/project_badges/measure?project=dmarc-parser&metric=reliability_rating)](https://sonar.dysnomia.studio/dashboard?id=dmarc-parser) [![Maintainability Rating](https://sonar.dysnomia.studio/api/project_badges/measure?project=dmarc-parser&metric=sqale_rating)](https://sonar.dysnomia.studio/dashboard?id=dmarc-parser) [![Security Rating](https://sonar.dysnomia.studio/api/project_badges/measure?project=dmarc-parser&metric=security_rating)](https://sonar.dysnomia.studio/dashboard?id=dmarc-parser)  
+[![Duplicated Lines (%)](https://sonar.dysnomia.studio/api/project_badges/measure?project=dmarc-parser&metric=duplicated_lines_density)](https://sonar.dysnomia.studio/dashboard?id=dmarc-parser) [![Coverage](https://sonar.dysnomia.studio/api/project_badges/measure?project=dmarc-parser&metric=coverage)](https://sonar.dysnomia.studio/dashboard?id=dmarc-parser)
+
 A simple job that query, parse and save to database dmarc aggregate reports.
 
 ![](dashboard.png)
