@@ -15,6 +15,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    
     - name: Build Dockerfile and Push to The Hub
       uses: firstmate-systems/docker-hub-builder@v1.0
       with:
