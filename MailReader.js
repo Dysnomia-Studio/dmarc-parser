@@ -30,7 +30,7 @@ export default class MailReader {
 
 	#findAttachmentParts(struct, attachments) {
 		attachments = attachments ||  [];
-		for (var i = 0, len = struct.length, r; i < len; ++i) {
+		for (let i = 0, len = struct.length, r; i < len; ++i) {
 			if (Array.isArray(struct[i])) {
 				this.#findAttachmentParts(struct[i], attachments);
 			} else {
@@ -43,14 +43,14 @@ export default class MailReader {
 	}
 
 	#buildAttMessageFunction(attachment, filename) {
-		var encoding = attachment.encoding;
+		let encoding = attachment.encoding;
 
 		return function (msg, seqno) {
-			var prefix = '(#' + seqno + ') ';
+			let prefix = '(#' + seqno + ') ';
 			msg.on('body', function(stream, info) {
 				//Create a write stream so that we can stream the attachment to file;
 				//console.log(prefix + 'Streaming this attachment to file', filename, info);
-				var writeStream = fs.createWriteStream('rawdata/' + filename);
+				let writeStream = fs.createWriteStream('rawdata/' + filename);
 				writeStream.on('finish', function() {
 					//console.log(prefix + 'Done writing to file %s', filename);
 				});
@@ -72,22 +72,24 @@ export default class MailReader {
 	}	
 
 	async retrieveLastMail() {
-		const job = new Promise((resolve, reject) => {
+		const job = new Promise((resolve, _reject) => {
 			let timeoutId;
 
-			this.#openInbox((err, box) => {
-				if (err) throw err;
+			this.#openInbox((err, _box) => {
+				if (err) {
+					throw err
+				}
 
 				const data = {};
 
-				let f = this.#imap.seq.fetch('1:*', {
+				const f = this.#imap.seq.fetch('1:*', {
 					bodies: 'HEADER.FIELDS (FROM TO SUBJECT DATE)',
 					struct: true
 				});
 				f.on('message', (msg, seqno) => {
 					//console.log('Message #%d', seqno);
-					let prefix = '(#' + seqno + ') ';
-					msg.on('body', function(stream, info) {
+					const prefix = '(#' + seqno + ') ';
+					msg.on('body', function(stream, _info) {
 						let buffer = '';
 						stream.on('data', function(chunk) {
 							buffer += chunk.toString('utf8');
@@ -140,8 +142,8 @@ export default class MailReader {
 							timeoutId = setTimeout(resolve, 5000);
 					});
 				});
-				f.once('error', function(err) {
-					console.log('Fetch error: ' + err);
+				f.once('error', function(fetchError) {
+					console.log('Fetch error: ' + fetchError);
 				});
 				f.once('end', () => {
 					//console.log('Done fetching all messages!');

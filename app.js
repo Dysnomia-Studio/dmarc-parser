@@ -22,7 +22,7 @@ async function doWork() {
 	/// GET MAILS
 	let mailReader;
 
-	let job = new Promise((resolve, _) => {
+	const job = new Promise((resolve, _) => {
 		mailReader = new MailReader(config.mail.credentials, resolve, config.mail.directory);
 	});
 
@@ -54,6 +54,10 @@ async function doWork() {
 			fs.mkdirSync(newFilename);
 
 			for(const insideFileName in res.files) {
+				if (!res.files.hasOwnProperty(insideFileName)) {
+					continue;
+				}
+
 				const insideFile = res.files[insideFileName]; 
 
 				if(insideFile.dir) {
@@ -114,7 +118,7 @@ async function doWork() {
 				}
 
 				try {
-			    	db.insertData(result, path);
+			    	await db.insertData(result, path);
 			    } catch(e) {
 			    	console.error(e);
 			    }
