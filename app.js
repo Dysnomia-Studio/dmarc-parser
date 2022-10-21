@@ -12,9 +12,9 @@ const RAW_DATA_FOLDER = 'rawdata/';
 
 import config from './config.js';
 
-async function doWork() {
-	const db = new Database(config.postgres);
+const db = new Database(config.postgres);
 
+async function doWork() {
 	if(!fs.existsSync(RAW_DATA_FOLDER)) {
 	    fs.mkdirSync(RAW_DATA_FOLDER);
 	}
