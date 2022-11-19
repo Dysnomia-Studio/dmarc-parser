@@ -54,7 +54,7 @@ async function doWork() {
 			fs.mkdirSync(newFilename);
 
 			for(const insideFileName in res.files) {
-				if (!res.files.hasOwnProperty(insideFileName)) {
+				if (res.files && res.files.hasOwnProperty && !res.files.hasOwnProperty(insideFileName)) {
 					continue;
 				}
 
@@ -99,7 +99,7 @@ async function doWork() {
 			}
 
 			const xml = fs.readFileSync(path, 'utf8');
-			parseString(xml, function (err, result) {
+			parseString(xml, async function(err, result) {
 				if(err) {
 					console.error(err);
 					return;
