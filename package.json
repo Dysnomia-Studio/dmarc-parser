@@ -11,7 +11,8 @@
   "description": "A simple job that query, parse and save to database dmarc aggregate reports",
   "main": "app.js",
   "scripts": {
-    "start": "node app",
+    "start": "sleep 5 && node app",
+    "start-dev": "node app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
