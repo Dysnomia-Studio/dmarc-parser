@@ -4,7 +4,7 @@
     "imap": "^0.8.19",
     "jszip": "^3.10.1",
     "pg": "^8.10.0",
-    "xml2js": "^0.4.23"
+    "xml2js": "^0.5.0"
   },
   "name": "dmarc-parser",
   "version": "1.0.0",
